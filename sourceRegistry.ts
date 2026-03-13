@@ -1,0 +1,1 @@
+export { SOURCE_MODULE_REGISTRY, SOURCE_MODULE_IDS } from './generatedSourceRegistry';

@@ -1,0 +1,1 @@
+export { MODULE_REGISTRY, MODULE_REGISTRY_BY_ID } from './generatedRegistry';
