@@ -3,27 +3,29 @@ import { Animated, StatusBar, View, Easing } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Font from 'expo-font';
 
-import AuthScreen from './src/screens/AuthScreen';
-import AuthLanding from './src/screens/AuthLanding';
-import Header from './src/components/Header';
-import BottomNav from './src/components/BottomNav';
-import Toast from './src/components/Toast';
-import MSCPanel from './src/components/MSCPanel';
-import ModulesScreen from './src/screens/ModulesScreen';
-import ModuleScreen from './src/screens/ModuleScreen';
-import CertsScreen from './src/screens/CertsScreen';
-import UserHomeScreen from './src/screens/UserHomeScreen';
-import BlocksScreen from './src/screens/BlocksScreen';
-import CulturalPathScreen from './src/screens/CulturalPathScreen';
-import LearningCenterScreen from './src/screens/LearningCenterScreen';
-import EtiquetteSplashCanvas from './src/screens/EtiquetteSplashCanvas';
+// Importy ekranów i komponentów z głównego folderu
+import AuthScreen from './AuthScreen';
+import AuthLanding from './AuthLanding';
+import Header from './Header';
+import BottomNav from './BottomNav';
+import Toast from './Toast';
+import MSCPanel from './MSCPanel';
+import ModulesScreen from './ModulesScreen';
+import ModuleScreen from './ModuleScreen';
+import CertsScreen from './CertsScreen';
+import UserHomeScreen from './UserHomeScreen';
+import BlocksScreen from './BlocksScreen';
+import CulturalPathScreen from './CulturalPathScreen';
+import LearningCenterScreen from './LearningCenterScreen';
+import EtiquetteSplashCanvas from './EtiquetteSplashCanvas';
 
-import { LANGS, T } from './src/data/translations';
-import { I18nProvider } from './src/i18n/useTranslation';
-import { loadState, saveState, setProgress } from './src/utils/storage';
-import { styles } from './src/styles/styles';
-import { theme } from './src/styles/theme';
-import { LearningPathsProvider } from './src/state/learning/LearningPathsContext';
+// Importy danych i narzędzi z głównego folderu
+import { LANGS, T } from './translations';
+import { I18nProvider } from './useTranslation';
+import { loadState, saveState, setProgress } from './storage';
+import { styles } from './styles';
+import { theme } from './theme';
+import { LearningPathsContext as LearningPathsProvider } from './LearningPathsContext';
 
 function AppTranslationBridge({ lang, setLang, children }) {
   return (
@@ -76,22 +78,20 @@ function AppInner({ restartApp }) {
     }).start();
   }, [appRootFade]);
 
-  // Localization handled by I18nProvider + useTranslation hook.
-// App layer should not implement its own translator.
-const t = useCallback(
-  (key, vars) => {
-    const active = (T[lang] || T.EN) || {};
-    const base = active[key] || T.EN?.[key] || key;
+  const t = useCallback(
+    (key, vars) => {
+      const active = (T[lang] || T.EN) || {};
+      const base = active[key] || T.EN?.[key] || key;
 
-    if (!vars) return base;
+      if (!vars) return base;
 
-    return String(base).replace(/\{(\w+)\}/g, (_, token) => {
-      const value = vars[token];
-      return value === undefined || value === null ? `{${token}}` : String(value);
-    });
-  },
-  [lang]
-);
+      return String(base).replace(/\{(\w+)\}/g, (_, token) => {
+        const value = vars[token];
+        return value === undefined || value === null ? `{${token}}` : String(value);
+      });
+    },
+    [lang]
+  );
 
   useEffect(() => {
     (async () => {
@@ -119,7 +119,7 @@ const t = useCallback(
     saveState({ lang, progress });
   }, [lang, progress]);
 
-    const navigate = useCallback((page, moduleId = null) => {
+  const navigate = useCallback((page, moduleId = null) => {
     if (isTransitioning || pageTransitionLock.current) return;
 
     const normalized = String(page).trim().toUpperCase();
@@ -132,13 +132,13 @@ const t = useCallback(
           : normalized;
 
     const isTopLevelNavTarget =
-  nextPage === 'HOME' ||
-  nextPage === 'USER' ||
-  nextPage === 'LEARNING_CENTER' ||
-  nextPage === 'CULTURAL_PATH' ||
-  nextPage === 'BLOCKS' ||
-  nextPage === 'MODULES' ||
-  nextPage === 'CERTS';
+      nextPage === 'HOME' ||
+      nextPage === 'USER' ||
+      nextPage === 'LEARNING_CENTER' ||
+      nextPage === 'CULTURAL_PATH' ||
+      nextPage === 'BLOCKS' ||
+      nextPage === 'MODULES' ||
+      nextPage === 'CERTS';
 
     const isSameTopLevelPage = nextPage === currentPage && moduleId === null;
     const isSameModulePage =
@@ -150,31 +150,31 @@ const t = useCallback(
       return;
     }
 
-const applyRouteChange = () => {
-  setCurrentPage(nextPage);
+    const applyRouteChange = () => {
+      setCurrentPage(nextPage);
 
-  if (nextPage === 'BLOCKS') {
-    setCurrentModuleId(null);
-    return;
-  }
+      if (nextPage === 'BLOCKS') {
+        setCurrentModuleId(null);
+        return;
+      }
 
-  if (nextPage === 'MODULES' && moduleId !== null) {
-    setCurrentModuleId(moduleId);
-    return;
-  }
+      if (nextPage === 'MODULES' && moduleId !== null) {
+        setCurrentModuleId(moduleId);
+        return;
+      }
 
-  if (nextPage === 'MODULE' && moduleId !== null) {
-    setCurrentModuleId(moduleId);
-    setCurrentMode('study');
-    setQuiz({
-      current: 0,
-      answers: [],
-      confirmed: {},
-      submitted: false,
-      score: 0,
-    });
-  }
-};
+      if (nextPage === 'MODULE' && moduleId !== null) {
+        setCurrentModuleId(moduleId);
+        setCurrentMode('study');
+        setQuiz({
+          current: 0,
+          answers: [],
+          confirmed: {},
+          submitted: false,
+          score: 0,
+        });
+      }
+    };
 
     pageTransitionLock.current = true;
     setIsPageTransitioning(true);
@@ -424,21 +424,21 @@ const applyRouteChange = () => {
         : <AuthLanding {...commonProps} />;
     }
 
-const pageComponents = {
-  HOME: <UserHomeScreen {...commonProps} />,
-  USER: <UserHomeScreen {...commonProps} />,
-  LEARNING_CENTER: <LearningCenterScreen {...commonProps} />,
-  CULTURAL_PATH: <CulturalPathScreen {...commonProps} />,
-  BLOCKS: <BlocksScreen {...commonProps} />,
-  MODULES: <ModulesScreen {...commonProps} />,
-  MODULE: <ModuleScreen {...commonProps} />,
-  CERTS: <CertsScreen {...commonProps} />,
-};
+    const pageComponents = {
+      HOME: <UserHomeScreen {...commonProps} />,
+      USER: <UserHomeScreen {...commonProps} />,
+      LEARNING_CENTER: <LearningCenterScreen {...commonProps} />,
+      CULTURAL_PATH: <CulturalPathScreen {...commonProps} />,
+      BLOCKS: <BlocksScreen {...commonProps} />,
+      MODULES: <ModulesScreen {...commonProps} />,
+      MODULE: <ModuleScreen {...commonProps} />,
+      CERTS: <CertsScreen {...commonProps} />,
+    };
 
     return pageComponents[currentPage] || <UserHomeScreen {...commonProps} />;
   };
 
-    const bottomNavH = isAuthenticated ? 56 + Math.max(8, insets.bottom) : 0;
+  const bottomNavH = isAuthenticated ? 56 + Math.max(8, insets.bottom) : 0;
 
   return (
     <AppTranslationBridge lang={lang} setLang={setLang}>
@@ -463,7 +463,7 @@ const pageComponents = {
           />
         )}
 
-                <Animated.View
+        <Animated.View
           style={[
             styles.mainContent,
             {
@@ -486,7 +486,7 @@ const pageComponents = {
 
         <Toast anim={toastAnim} msg={toastMsg} type={toastType} />
 
-                {isAuthenticated && (
+        {isAuthenticated && (
           <BottomNav
             currentPage={currentPage}
             navigate={navigate}
@@ -537,24 +537,21 @@ export default function App() {
     (async () => {
       try {
         await Font.loadAsync({
-          PlayfairDisplay_400: require('./src/assets/fonts/PlayfairDisplay-Regular.ttf'),
-          PlayfairDisplay_500: require('./src/assets/fonts/PlayfairDisplay-Medium.ttf'),
-          PlayfairDisplay_600: require('./src/assets/fonts/PlayfairDisplay-SemiBold.ttf'),
-          PlayfairDisplay_700: require('./src/assets/fonts/PlayfairDisplay-Bold.ttf'),
-          PlayfairDisplay_900: require('./src/assets/fonts/PlayfairDisplay-Black.ttf'),
-
-          PlayfairDisplay_400_Italic: require('./src/assets/fonts/PlayfairDisplay-Italic.ttf'),
-          PlayfairDisplay_500_Italic: require('./src/assets/fonts/PlayfairDisplay-MediumItalic.ttf'),
-          PlayfairDisplay_600_Italic: require('./src/assets/fonts/PlayfairDisplay-SemiBoldItalic.ttf'),
-          PlayfairDisplay_700_Italic: require('./src/assets/fonts/PlayfairDisplay-BoldItalic.ttf'),
-          PlayfairDisplay_900_Italic: require('./src/assets/fonts/PlayfairDisplay-BlackItalic.ttf'),
-
-          CormorantGaramond_300: require('./src/assets/fonts/CormorantGaramond-Light.ttf'),
-          CormorantGaramond_400: require('./src/assets/fonts/CormorantGaramond-Regular.ttf'),
-          CormorantGaramond_500: require('./src/assets/fonts/CormorantGaramond-Medium.ttf'),
-          CormorantGaramond_400_Italic: require('./src/assets/fonts/CormorantGaramond-Italic.ttf'),
+          PlayfairDisplay_400: require('./PlayfairDisplay-Regular.ttf'),
+          PlayfairDisplay_500: require('./PlayfairDisplay-Medium.ttf'),
+          PlayfairDisplay_600: require('./PlayfairDisplay-SemiBold.ttf'),
+          PlayfairDisplay_700: require('./PlayfairDisplay-Bold.ttf'),
+          PlayfairDisplay_900: require('./PlayfairDisplay-Black.ttf'),
+          PlayfairDisplay_400_Italic: require('./PlayfairDisplay-Italic.ttf'),
+          PlayfairDisplay_500_Italic: require('./PlayfairDisplay-MediumItalic.ttf'),
+          PlayfairDisplay_600_Italic: require('./PlayfairDisplay-SemiBoldItalic.ttf'),
+          PlayfairDisplay_700_Italic: require('./PlayfairDisplay-BoldItalic.ttf'),
+          PlayfairDisplay_900_Italic: require('./PlayfairDisplay-BlackItalic.ttf'),
+          CormorantGaramond_300: require('./CormorantGaramond-Light.ttf'),
+          CormorantGaramond_400: require('./CormorantGaramond-Regular.ttf'),
+          CormorantGaramond_500: require('./CormorantGaramond-Medium.ttf'),
+          CormorantGaramond_400_Italic: require('./CormorantGaramond-Italic.ttf'),
         });
-
         setFontsLoaded(true);
       } catch (e) {
         setFontsLoaded(false);
